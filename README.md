@@ -50,7 +50,7 @@ Users should be able to:
 
 ### What I learned
 
-To vertical line which extends with adding new replies using height = fit-content to parent class.
+1. To vertical line which extends with adding new replies using height = fit-content to parent class.
 
 ```html
    <hr class="vertical">
@@ -73,6 +73,8 @@ To vertical line which extends with adding new replies using height = fit-conten
 }
 
 ```
+
+2. The more complex structure the more CSS needs to modularised
 
 ### Continued development
 

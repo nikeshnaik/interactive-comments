@@ -31,11 +31,12 @@ main {
 
 .container {
     width: 100rem;
-    height: 100rem;
+    height: max-content;
     background-color: var(--neutral-Very-light-gray);
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 10rem;
     gap: 1rem;
 }
 
@@ -86,6 +87,7 @@ main {
     display: flex;
     flex-direction: row;
     padding-right: 2rem;
+    text-decoration: none;
 }
 
 .reply_icon {
@@ -101,6 +103,12 @@ main {
     color: #6f737c;
     margin: 1rem;
     height: fit-content;
+    display: flex;
+    flex-direction: column;
+}
+
+#update_button {
+    align-self: flex-end;
 }
 
 .comment_text > p {
@@ -112,6 +120,7 @@ main {
 
 .vote_container {
     width: 2rem;
+
     height: 5rem;
     display: flex;
     flex-direction: column;
@@ -165,6 +174,66 @@ main {
     width: 35rem;
     height: fit-content;
     background-color: var(--neutral-White);
+    display: flex;
+    flex-direction: row;
+}
+
+/* Active State CSS */
+
+.active_state {
+    border: 0.1rem solid black;
+    border-radius: 0.4rem;
+    padding: 0.8rem;
+}
+
+.input_reply_container {
+    display: flex;
+    width: inherit;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-top: 2rem;
+}
+
+.input_reply_container > img {
+    width: 2rem;
+    height: 2rem;
+    display: block;
+    position: relative;
+    left: 1rem;
+}
+
+.comment_input {
+    width: inherit;
+    min-height: 1rem;
+    margin-bottom: 1rem;
+    padding: 1.2rem;
+    border-radius: 0.6rem;
+    color: #6f737c;
+    resize: none;
+    background-color: transparent;
+    box-shadow: none;
+    /* Remove that box shadow of textarea */
+}
+
+.input_button {
+    text-decoration: none;
+    width: 6rem;
+    height: 2rem;
+    padding: 0.4rem;
+    margin-right: 1.4rem;
+
+    color: white;
+    background-color: var(--primary-Moderate-blue);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.4rem;
+    transform: scale(1);
+}
+
+.update_comment {
     display: flex;
     flex-direction: row;
 }

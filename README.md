@@ -76,6 +76,12 @@ Users should be able to:
 
 2. The more complex structure the more CSS needs to modularised
 
+
+3. While using templates, try querySelector to get parent class of template and appendChild. Since Templates have unique classes.
+
+4. Use Map of array functions as possible.
+
+
 ### Continued development
 
 1. Layout is done which extends with new replies and new comments. Need to add User Comment.

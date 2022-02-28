@@ -83,5 +83,5 @@ Users should be able to:
 ## Author
 
 - Website - [nikeshnaik.dev](https://nikeshnaik.dev)
-- Frontend Mentor - [@yourusername](https://www.frontendmentor.io/profile/nikeshnnaik)
+- Frontend Mentor - [@nikeshnaik](https://www.frontendmentor.io/profile/nikeshnnaik)
 - Twitter - [@nikeshinfinity](https://www.twitter.com/nikeshinfinity)

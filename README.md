@@ -37,7 +37,7 @@ Users should be able to:
 
 ### Links
 
-- Solution URL: [Add solution URL here](https://your-solution-url.com)
+- Solution URL: yet to submit
 - Live Site URL: [https://optimistic-mccarthy-e0dba9.netlify.app/](https://optimistic-mccarthy-e0dba9.netlify.app/)
 
 ## My process

@@ -65,7 +65,7 @@ const data = {
             ]
         },
         {
-            "id": 2,
+            "id": 5,
             "content": "Woah, your project looks awesome! How long have you been coding for? I'm still new, but think I want to dive into React as well soon. Perhaps you can give me an insight on where I can learn React? Thanks!",
             "createdAt": "2 weeks ago",
             "score": 5,
@@ -78,7 +78,7 @@ const data = {
             },
             "replies": [
                 {
-                    "id": 3,
+                    "id": 6,
                     "content": "If you're still new, I'd recommend focusing on the fundamentals of HTML, CSS, and JS before considering React. It's very tempting to jump ahead but lay a solid foundation first.",
                     "createdAt": "1 week ago",
                     "score": 4,
@@ -92,7 +92,7 @@ const data = {
                     }
                 },
                 {
-                    "id": 4,
+                    "id": 7,
                     "content": "I couldn't agree more with this. Everything moves so fast and it always seems like everyone knows the newest library/framework. But the fundamentals are what stay constant.",
                     "createdAt": "2 days ago",
                     "score": 2,
@@ -123,77 +123,10 @@ const templates = {
     "modal": document.getElementById("modal"),
     "reply_box": document.getElementById("reply_box"),
     "container": document.querySelector(".container")
+
 }
 
 
-// window.onload = function () {
-
-//     let comment_container_first_child = templates.comment_container.content.cloneNode(true).querySelector(".comment_container");
-//     let main_comment_input = templates.main_comment_input.content.cloneNode(true).querySelector(".input_reply_container");
-//     main_comment_input.getElementsByTagName("img")[0].src = "./images/avatars/image-amyrobson.png"
-//     main_comment_input.getElementsByTagName("textarea")[0].value = ""
-//     // main_comment_input.getElementsByTagName("a")[0].addEventListener('click', () => {
-//     // console.log("kasjhdkfh")
-//     // })
-//     comment_container_first_child.appendChild(main_comment_input)
-//     templates.container[0].appendChild(comment_container_first_child)
-
-// }
-
-
-// // parent -> main, reply -> child of parent
-// function CurrentUser(type = "parent") {
-
-//     let reply = "";
-
-//     if (type == "parent") {
-
-//         let comment_container = templates.comment_container.content.cloneNode(true).querySelector(".comment_container");
-//         let main_comment_input = templates.main_comment_input.content.cloneNode(true).querySelector(".input_reply_container");
-//         main_comment_input.getElementsByTagName("img")[0].src = data.currentUser.image.png
-//         main_comment_input.getElementsByTagName("textarea")[0].value = "";
-//         comment_container.appendChild(main_comment_input)
-
-//         templates.container[0].appendChild(comment_container)
-
-//     }
-
-//     else if (type == "child") {
-
-//         let reply_container = templates.reply_container.content.cloneNode(true).querySelector(".reply_container");
-
-//         let main_comment_reply_input = templates.main_comment_reply_input.content.cloneNode(true).querySelector(".input_reply_container");
-//         main_comment_reply_input.getElementsByTagName("img")[0].src = data.currentUser.image.png
-//         main_comment_reply_input.getElementsByTagName("textarea")[0].value = "";
-//         reply_container.getElementsByClassName("reply_box")[0].appendChild(main_comment_reply_input)
-
-//         templates.container[0].appendChild(reply_container);
-
-//     }
-
-
-// }
-
-// CurrentUser("parent")
-// CurrentUser("child");
-// CurrentUser("child");
-
-
-
-// {
-//     "id": 1,
-//     "content": "Impressive! Though it seems the drag feature could be improved. But overall it looks incredible. You've nailed the design and the responsiveness at various breakpoints works really well.",
-//     "createdAt": "1 month ago",
-//     "score": 12,
-//     "user": {
-//         "image": {
-//             "png": "./images/avatars/image-amyrobson.png",
-//             "webp": "./images/avatars/image-amyrobson.webp"
-//         },
-//         "username": "amyrobson"
-//     },
-//     "replies": []
-// }
 
 
 
@@ -203,7 +136,7 @@ function create_level_one_Comments(comment) {
     let vote_container = templates.vote_container.content.cloneNode(true).querySelector(".vote_container");
     let comment_box = templates.comment_box.content.cloneNode(true).querySelector(".comment_box");
 
-    vote_container.querySelector(".votes").value = comment.score
+    vote_container.querySelector(".votes").textContent = comment.score
     comment_container.appendChild(vote_container)
 
     comment_box.querySelector(".profile_pic").src = comment.user.image.png
@@ -214,6 +147,9 @@ function create_level_one_Comments(comment) {
 
     comment_container.appendChild(vote_container)
     comment_container.appendChild(comment_box)
+
+    comment_container.id = comment.id
+    comment_container = container_level_eventListener(comment_container)
 
     templates.container.appendChild(comment_container)
 
@@ -234,6 +170,10 @@ function create_level_one_Comments(comment) {
             [vote_container, comment_box] = create_level_two_comments(element)
             reply_box.appendChild(vote_container)
             reply_box.appendChild(comment_box)
+
+            reply_box.id = element.id
+
+            reply_box = container_level_eventListener(reply_box)
             reply_container.querySelector(".reply_column").appendChild(reply_box)
 
 
@@ -248,12 +188,13 @@ function create_level_one_Comments(comment) {
 
 }
 
+
 function create_level_two_comments(reply) {
 
     let vote_container = templates.vote_container.content.cloneNode(true).querySelector(".vote_container");
     let comment_box = templates.comment_box.content.cloneNode(true).querySelector(".comment_box");
 
-    vote_container.querySelector(".votes").value = reply.score
+    vote_container.querySelector(".votes").textContent = reply.score
 
     comment_box.querySelector(".profile_pic").src = reply.user.image.png
     comment_box.querySelector(".user_name").textContent = reply.user.username
@@ -268,3 +209,45 @@ function create_level_two_comments(reply) {
 // Loops through each comment and for each reply constructs DOM.
 
 data.comments.map(create_level_one_Comments);
+
+
+
+
+function container_level_eventListener(container) {
+
+    container.addEventListener("click", (event) => {
+
+
+        if (event.currentTarget.className == "reply_box") {
+
+            let main_comment_id = parseInt(event.currentTarget.closest(".reply_container").previousSibling.id);
+            let reply_id = parseInt(event.currentTarget.id);
+
+            let main_comment_index = data.comments.findIndex(ele => ele.id == main_comment_id)
+            console.log(main_comment_index)
+            if (data.comments[main_comment_index].replies) {
+
+                let reply_comment_index = data.comments[main_comment_index].replies.findIndex(ele => ele.id == reply_id);
+                console.log(reply_comment_index)
+
+                console.log(data.comments[main_comment_index].replies[reply_comment_index])
+
+
+                data.comments[main_comment_index].replies[reply_comment_index].score += 1;
+
+
+
+
+            }
+
+
+        }
+        else if (event.currentTarget.className == "comment_container") {
+            console.log(event.currentTarget.id)
+        }
+
+    }, true)
+
+    return container
+
+}

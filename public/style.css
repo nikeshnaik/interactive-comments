@@ -22,6 +22,10 @@ html {
     font-family: "Karla", sans-serif;
 }
 
+body {
+    background-color: var(--neutral-Very-light-gray);
+}
+
 main {
     display: flex;
     flex-direction: column;
@@ -44,11 +48,10 @@ main {
 .comment_container {
     display: flex;
     width: 40rem;
+    height: fit-content;
     background-color: var(--neutral-White);
-    height: 10rem;
     flex-direction: row;
     gap: 1rem;
-    height: fit-content;
 }
 
 .comment_box {
@@ -152,7 +155,6 @@ main {
 .reply_container {
     width: 40rem;
     height: fit-content;
-    /* update the hieght with JS */
     display: flex;
     flex-direction: row;
     justify-content: flex-end;

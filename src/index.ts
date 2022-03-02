@@ -208,7 +208,6 @@ function create_level_two_comments(reply) {
 
 // Loops through each comment and for each reply constructs DOM.
 
-data.comments.map(create_level_one_Comments);
 
 
 
@@ -220,21 +219,39 @@ function container_level_eventListener(container) {
 
         if (event.currentTarget.className == "reply_box") {
 
+            //  Get Main Commnent ID and Reply ID by bubbling up event from DOM
             let main_comment_id = parseInt(event.currentTarget.closest(".reply_container").previousSibling.id);
             let reply_id = parseInt(event.currentTarget.id);
 
+            // Find main comment index of that object in data JSON
             let main_comment_index = data.comments.findIndex(ele => ele.id == main_comment_id)
-            console.log(main_comment_index)
+
             if (data.comments[main_comment_index].replies) {
 
+                // Find reply comment index of that object in data JSON
                 let reply_comment_index = data.comments[main_comment_index].replies.findIndex(ele => ele.id == reply_id);
-                console.log(reply_comment_index)
 
-                console.log(data.comments[main_comment_index].replies[reply_comment_index])
+                // Since Upvote div --> Votes Number -->  Downvote div are all in sequence, we can use below logic
 
 
-                data.comments[main_comment_index].replies[reply_comment_index].score += 1;
+                // if upvote, get its next nextsibling and update data and assign update vote to element
+                if (event.target.className == "upvote") {
 
+                    data.comments[main_comment_index].replies[reply_comment_index].score += 1;
+
+                    event.target.nextElementSibling.textContent = data.comments[main_comment_index].replies[reply_comment_index].score
+
+                }
+
+                // if downvote, get its next previousSibling and update data and assign update vote to element
+                else if (event.target.className == "downvote") {
+
+
+                    data.comments[main_comment_index].replies[reply_comment_index].score -= 1;
+
+                    event.target.previousElementSibling.textContent = data.comments[main_comment_index].replies[reply_comment_index].score
+
+                }
 
 
 
@@ -243,7 +260,49 @@ function container_level_eventListener(container) {
 
         }
         else if (event.currentTarget.className == "comment_container") {
-            console.log(event.currentTarget.id)
+            let main_comment_id = event.currentTarget.id
+
+            let main_comment_index = data.comments.findIndex(ele => ele.id == main_comment_id)
+
+            // Since Upvote div --> Votes Number -->  Downvote div are all in sequence, we can use below logic
+
+
+            // if upvote, get its next nextsibling and update data and assign update vote to element
+            if (event.target.className == "upvote") {
+
+                data.comments[main_comment_index].score += 1;
+
+                event.target.nextElementSibling.textContent = data.comments[main_comment_index].score
+
+            }
+
+            // if downvote, get its next previousSibling and update data and assign update vote to element
+            else if (event.target.className == "downvote") {
+
+
+                data.comments[main_comment_index].score -= 1;
+
+                event.target.previousElementSibling.textContent = data.comments[main_comment_index].score
+
+            }
+
+
+
+            console.log(event.target)
+            console.log(event.currentTarget)
+
+            else if (event.target.parentElement.className == "reply_btn") {
+
+                // put the reply_container here/ open a template
+
+            }
+
+
+
+
+
+
+
         }
 
     }, true)
@@ -251,3 +310,11 @@ function container_level_eventListener(container) {
     return container
 
 }
+
+
+
+data.comments.map(create_level_one_Comments);
+
+
+
+

@@ -83,9 +83,9 @@ Users should be able to:
 
 5. Use Bubble UP event as much as possible to reduce multiple event listener and its maintainence.
 
-6. FindIndex method on array to find the id is really helpful.
+6. `FindIndex` method on array to find the id is really helpful.
 
-7. Use previousSibling and NextSibling or Parent to check if bubbled up event came from correct div.
+7. Use `previousSibling` and `NextSibling` or Parent to check if bubbled up event came from correct div.
 
 
 ### Continued development

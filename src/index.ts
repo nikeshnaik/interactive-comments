@@ -129,7 +129,6 @@ const templates = {
 
 
 
-
 function create_level_one_Comments(comment) {
 
     let comment_container = templates.comment_container.content.cloneNode(true).querySelector(".comment_container");
@@ -217,9 +216,6 @@ function container_level_eventListener(container) {
 
     container.addEventListener("click", (event) => {
 
-        console.log(event.currentTarget)
-        console.log(event.target)
-
 
         if (event.currentTarget.className == "reply_box") {
 
@@ -259,7 +255,7 @@ function container_level_eventListener(container) {
 
                 else if (event.target.className == "input_button") {
 
-                    let input_text = event.currentTarget.querySelector(".comment_input").textContent
+                    let input_text = event.currentTarget.querySelector(".comment_input").value
                     let reply_box = Replace_input_with_reply_box(input_text)
                     // persist the change in Data
 
@@ -356,7 +352,6 @@ function container_level_eventListener(container) {
 
 
 
-data.comments.map(create_level_one_Comments);
 
 
 
@@ -419,3 +414,10 @@ function addReply_container() {
 
 
 let reply_ids = 10
+
+data.comments.map(create_level_one_Comments);
+
+
+//  Todo
+// 1. Group Reply Containers together
+// 2. Change the games

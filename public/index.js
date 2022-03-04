@@ -167,8 +167,6 @@ function create_level_two_comments(reply) {
 // Loops through each comment and for each reply constructs DOM.
 function container_level_eventListener(container) {
     container.addEventListener("click", function (event) {
-        console.log(event.currentTarget);
-        console.log(event.target);
         if (event.currentTarget.className == "reply_box") {
             //  Get Main Commnent ID and Reply ID by bubbling up event from DOM
             var main_comment_id_1 = parseInt(event.currentTarget.closest(".reply_container").previousSibling.id);
@@ -190,7 +188,7 @@ function container_level_eventListener(container) {
                     event.target.previousElementSibling.textContent = data.comments[main_comment_index].replies[reply_comment_index].score;
                 }
                 else if (event.target.className == "input_button") {
-                    var input_text = event.currentTarget.querySelector(".comment_input").textContent;
+                    var input_text = event.currentTarget.querySelector(".comment_input").value;
                     var reply_box = Replace_input_with_reply_box(input_text);
                     // persist the change in Data
                     var clone = event.currentTarget.cloneNode(true).parentElement;
@@ -239,7 +237,6 @@ function container_level_eventListener(container) {
     }, true);
     return container;
 }
-data.comments.map(create_level_one_Comments);
 function Replace_input_with_reply_box(new_comment) {
     // Reply Box replace
     var reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
@@ -271,3 +268,7 @@ function addReply_container() {
     return reply_container;
 }
 var reply_ids = 10;
+data.comments.map(create_level_one_Comments);
+//  Todo
+// 1. Group Reply Containers together
+// 2. Change the games

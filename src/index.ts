@@ -157,7 +157,8 @@ function create_level_one_Comments(comment) {
     // Checks if comment has replied, yes then clones template and appends to DOM for each reply.
     // container --> comment_container --> reply_container --> reply_box , reply_box ....
 
-    if (comment.replies) {
+    if (comment.replies.length > 0) {
+
 
 
         let reply_container = templates.reply_container.content.cloneNode(true).querySelector(".reply_container");
@@ -216,6 +217,9 @@ function container_level_eventListener(container) {
 
     container.addEventListener("click", (event) => {
 
+        console.log(event.currentTarget)
+        console.log(event.target)
+
 
         if (event.currentTarget.className == "reply_box") {
 
@@ -250,6 +254,44 @@ function container_level_eventListener(container) {
                     data.comments[main_comment_index].replies[reply_comment_index].score -= 1;
 
                     event.target.previousElementSibling.textContent = data.comments[main_comment_index].replies[reply_comment_index].score
+
+                }
+
+                else if (event.target.className == "input_button") {
+
+                    let input_text = event.currentTarget.querySelector(".comment_input").textContent
+                    let reply_box = Replace_input_with_reply_box(input_text)
+                    // persist the change in Data
+
+
+                    let clone = event.currentTarget.cloneNode(true).parentElement
+
+                    event.currentTarget.replaceWith(reply_box)
+                    reply_box.parentElement = clone
+
+
+                    let main_comment_id = reply_box.closest(".reply_container").previousElementSibling.id
+                    let main_comment_index = data.comments.findIndex(ele => ele.id == main_comment_id)
+
+                    let reply_object = {
+                        "id": reply_box.id,
+                        "content": input_text,
+                        "createdAt": "Today",
+                        "score": 0,
+                        "replyingTo": data.comments[main_comment_index].user.username,
+                        "user": {
+                            "image": {
+                                "png": data.currentUser.image.png,
+                                "webp": data.currentUser.image.webp
+                            },
+                            "username": data.currentUser.username
+                        }
+                    }
+
+                    data.comments[main_comment_index].replies.push(reply_object)
+
+
+
 
                 }
 
@@ -288,12 +330,13 @@ function container_level_eventListener(container) {
 
 
 
-            console.log(event.target)
-            console.log(event.currentTarget)
-
             else if (event.target.parentElement.className == "reply_btn") {
 
-                // put the reply_container here/ open a template
+
+                let input_reply_container = addReply_container();
+                let next_sibling = event.currentTarget.nextSibling
+
+                templates.container.insertBefore(input_reply_container, next_sibling)
 
             }
 
@@ -317,4 +360,62 @@ data.comments.map(create_level_one_Comments);
 
 
 
+function Replace_input_with_reply_box(new_comment) {
 
+    // Reply Box replace
+    let reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
+
+    let vote_container = templates.vote_container.content.cloneNode(true).querySelector(".vote_container");
+    let comment_box = templates.comment_box.content.cloneNode(true).querySelector(".comment_box");
+
+    vote_container.querySelector(".votes").textContent = 0
+
+    comment_box.querySelector(".profile_pic").src = data.currentUser.image.png
+    comment_box.querySelector(".user_name").textContent = data.currentUser.username
+    comment_box.querySelector(".post_date").textContent = "Today"
+    comment_box.querySelector(".comment").textContent = new_comment
+
+    reply_box.appendChild(vote_container)
+    reply_box.appendChild(comment_box)
+
+    reply_ids += 1
+
+    reply_box.id = reply_ids
+
+    reply_box = container_level_eventListener(reply_box)
+
+    return reply_box
+
+}
+
+function addReply_container() {
+
+    let input_reply_level_one = templates.main_comment_reply_input.content.cloneNode(true).querySelector(".input_reply_container");
+
+    let reply_container = templates.reply_container.content.cloneNode(true).querySelector(".reply_container");
+
+    let reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
+
+
+    input_reply_level_one.querySelector("img").src = data.currentUser.image.png
+    input_reply_level_one.querySelector(".comment_input").value = ""
+
+    reply_box.appendChild(input_reply_level_one)
+
+    reply_ids += 1
+
+    reply_box.id = reply_ids
+
+    reply_box = container_level_eventListener(reply_box)
+
+    reply_container.querySelector(".reply_column").appendChild(reply_box)
+
+
+
+
+    return reply_container
+
+}
+
+
+let reply_ids = 10

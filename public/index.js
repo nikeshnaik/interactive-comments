@@ -139,7 +139,7 @@ function create_level_one_Comments(comment) {
     templates.container.appendChild(comment_container);
     // Checks if comment has replied, yes then clones template and appends to DOM for each reply.
     // container --> comment_container --> reply_container --> reply_box , reply_box ....
-    if (comment.replies) {
+    if (comment.replies.length > 0) {
         var reply_container_1 = templates.reply_container.content.cloneNode(true).querySelector(".reply_container");
         comment.replies.map(function (element) {
             var _a;
@@ -167,6 +167,8 @@ function create_level_two_comments(reply) {
 // Loops through each comment and for each reply constructs DOM.
 function container_level_eventListener(container) {
     container.addEventListener("click", function (event) {
+        console.log(event.currentTarget);
+        console.log(event.target);
         if (event.currentTarget.className == "reply_box") {
             //  Get Main Commnent ID and Reply ID by bubbling up event from DOM
             var main_comment_id_1 = parseInt(event.currentTarget.closest(".reply_container").previousSibling.id);
@@ -187,11 +189,36 @@ function container_level_eventListener(container) {
                     data.comments[main_comment_index].replies[reply_comment_index].score -= 1;
                     event.target.previousElementSibling.textContent = data.comments[main_comment_index].replies[reply_comment_index].score;
                 }
+                else if (event.target.className == "input_button") {
+                    var input_text = event.currentTarget.querySelector(".comment_input").textContent;
+                    var reply_box = Replace_input_with_reply_box(input_text);
+                    // persist the change in Data
+                    var clone = event.currentTarget.cloneNode(true).parentElement;
+                    event.currentTarget.replaceWith(reply_box);
+                    reply_box.parentElement = clone;
+                    var main_comment_id_2 = reply_box.closest(".reply_container").previousElementSibling.id;
+                    var main_comment_index_1 = data.comments.findIndex(function (ele) { return ele.id == main_comment_id_2; });
+                    var reply_object = {
+                        "id": reply_box.id,
+                        "content": input_text,
+                        "createdAt": "Today",
+                        "score": 0,
+                        "replyingTo": data.comments[main_comment_index_1].user.username,
+                        "user": {
+                            "image": {
+                                "png": data.currentUser.image.png,
+                                "webp": data.currentUser.image.webp
+                            },
+                            "username": data.currentUser.username
+                        }
+                    };
+                    data.comments[main_comment_index_1].replies.push(reply_object);
+                }
             }
         }
         else if (event.currentTarget.className == "comment_container") {
-            var main_comment_id_2 = event.currentTarget.id;
-            var main_comment_index = data.comments.findIndex(function (ele) { return ele.id == main_comment_id_2; });
+            var main_comment_id_3 = event.currentTarget.id;
+            var main_comment_index = data.comments.findIndex(function (ele) { return ele.id == main_comment_id_3; });
             // Since Upvote div --> Votes Number -->  Downvote div are all in sequence, we can use below logic
             // if upvote, get its next nextsibling and update data and assign update vote to element
             if (event.target.className == "upvote") {
@@ -203,13 +230,44 @@ function container_level_eventListener(container) {
                 data.comments[main_comment_index].score -= 1;
                 event.target.previousElementSibling.textContent = data.comments[main_comment_index].score;
             }
-            console.log(event.target);
-            console.log(event.currentTarget);
-            if (event.target.parentElement.className == "reply_btn") {
-                // put the reply_container here/ open a template
+            else if (event.target.parentElement.className == "reply_btn") {
+                var input_reply_container = addReply_container();
+                var next_sibling = event.currentTarget.nextSibling;
+                templates.container.insertBefore(input_reply_container, next_sibling);
             }
         }
     }, true);
     return container;
 }
 data.comments.map(create_level_one_Comments);
+function Replace_input_with_reply_box(new_comment) {
+    // Reply Box replace
+    var reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
+    var vote_container = templates.vote_container.content.cloneNode(true).querySelector(".vote_container");
+    var comment_box = templates.comment_box.content.cloneNode(true).querySelector(".comment_box");
+    vote_container.querySelector(".votes").textContent = 0;
+    comment_box.querySelector(".profile_pic").src = data.currentUser.image.png;
+    comment_box.querySelector(".user_name").textContent = data.currentUser.username;
+    comment_box.querySelector(".post_date").textContent = "Today";
+    comment_box.querySelector(".comment").textContent = new_comment;
+    reply_box.appendChild(vote_container);
+    reply_box.appendChild(comment_box);
+    reply_ids += 1;
+    reply_box.id = reply_ids;
+    reply_box = container_level_eventListener(reply_box);
+    return reply_box;
+}
+function addReply_container() {
+    var input_reply_level_one = templates.main_comment_reply_input.content.cloneNode(true).querySelector(".input_reply_container");
+    var reply_container = templates.reply_container.content.cloneNode(true).querySelector(".reply_container");
+    var reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
+    input_reply_level_one.querySelector("img").src = data.currentUser.image.png;
+    input_reply_level_one.querySelector(".comment_input").value = "";
+    reply_box.appendChild(input_reply_level_one);
+    reply_ids += 1;
+    reply_box.id = reply_ids;
+    reply_box = container_level_eventListener(reply_box);
+    reply_container.querySelector(".reply_column").appendChild(reply_box);
+    return reply_container;
+}
+var reply_ids = 10;

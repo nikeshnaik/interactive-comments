@@ -259,7 +259,6 @@ function container_level_eventListener(container) {
                     let reply_box = Replace_input_with_reply_box(input_text)
                     // persist the change in Data
 
-
                     let clone = event.currentTarget.cloneNode(true).parentElement
 
                     event.currentTarget.replaceWith(reply_box)
@@ -269,12 +268,16 @@ function container_level_eventListener(container) {
                     let main_comment_id = reply_box.closest(".reply_container").previousElementSibling.id
                     let main_comment_index = data.comments.findIndex(ele => ele.id == main_comment_id)
 
+                    console.log({ reply_ids })
+
+
                     let reply_object = {
                         "id": reply_box.id,
                         "content": input_text,
                         "createdAt": "Today",
                         "score": 0,
                         "replyingTo": data.comments[main_comment_index].user.username,
+                        // need to update with reply username
                         "user": {
                             "image": {
                                 "png": data.currentUser.image.png,
@@ -286,6 +289,27 @@ function container_level_eventListener(container) {
 
                     data.comments[main_comment_index].replies.push(reply_object)
 
+                }
+                // console.log(event.target)
+                // console.log(event.currentTarget)
+
+                else if (event.target.parentElement.className == "reply_btn") {
+
+
+                    // Get existing reply_container
+
+                    let existing_reply_container = event.currentTarget.parentElement.parentElement
+
+                    // clone input reply box
+                    let input_reply_box = addReply_container();
+
+                    // get sibling of clicked reply button
+
+                    let next_sibling = event.currentTarget.nextSibling
+
+                    // insert before it
+
+                    existing_reply_container.querySelector(".reply_column").insertBefore(input_reply_box, next_sibling)
 
 
 
@@ -329,17 +353,32 @@ function container_level_eventListener(container) {
             else if (event.target.parentElement.className == "reply_btn") {
 
 
-                let input_reply_container = addReply_container();
+                // Get existing reply_container
+
+                let existing_reply_container = event.currentTarget.nextSibling
+
+                let reply_container = templates.reply_container.content.cloneNode(true).querySelector(".reply_container");
+
+                // build input reply container and appened to existing reply_container or clone new one
+
+                let input_reply_box = addReply_container();
+
                 let next_sibling = event.currentTarget.nextSibling
 
-                templates.container.insertBefore(input_reply_container, next_sibling)
+                if (existing_reply_container.className == "reply_container") {
+                    reply_container = existing_reply_container
+
+                }
+
+                console.log({ next_sibling })
+
+                reply_container.querySelector(".reply_column").appendChild(input_reply_box)
+
+
+                // Insert before new comment
+                templates.container.insertBefore(reply_container, next_sibling)
 
             }
-
-
-
-
-
 
 
         }
@@ -349,9 +388,6 @@ function container_level_eventListener(container) {
     return container
 
 }
-
-
-
 
 
 
@@ -387,7 +423,7 @@ function addReply_container() {
 
     let input_reply_level_one = templates.main_comment_reply_input.content.cloneNode(true).querySelector(".input_reply_container");
 
-    let reply_container = templates.reply_container.content.cloneNode(true).querySelector(".reply_container");
+    // let reply_container = templates.reply_container.content.cloneNode(true).querySelector(".reply_container");
 
     let reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
 
@@ -403,12 +439,7 @@ function addReply_container() {
 
     reply_box = container_level_eventListener(reply_box)
 
-    reply_container.querySelector(".reply_column").appendChild(reply_box)
-
-
-
-
-    return reply_container
+    return reply_box
 
 }
 
@@ -418,6 +449,7 @@ let reply_ids = 10
 data.comments.map(create_level_one_Comments);
 
 
-//  Todo
-// 1. Group Reply Containers together
-// 2. Change the games
+// Todo
+
+// 1. Change replyTo with reply username
+// 2. Continue adding new templates in any order

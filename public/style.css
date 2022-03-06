@@ -206,6 +206,18 @@ main {
     left: 1rem;
 }
 
+.self-indicator {
+    display: none;
+    background-color: var(--primary-Moderate-blue);
+    color: white;
+    padding: 0.1rem;
+}
+
+.replyingToUser {
+    color: var(--primary-Moderate-blue);
+    font-weight: bolder;
+}
+
 .comment_input {
     width: inherit;
     min-height: 1rem;
@@ -213,10 +225,7 @@ main {
     padding: 1.2rem;
     border-radius: 0.6rem;
     color: #6f737c;
-    resize: none;
-    background-color: transparent;
-    box-shadow: none;
-    /* Remove that box shadow of textarea */
+    border: 0.1rem solid;
 }
 
 .input_button {

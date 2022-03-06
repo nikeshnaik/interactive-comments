@@ -46,6 +46,7 @@
             <div class="comment_nav-meta">
               <img src="images/avatars/image-amyrobson.webp" alt="asdf" class="profile_pic">
               <p class="user_name">Amy Robson</p>
+              <p class="self-indicator">you</p>
               <p class="post_date">1 month ago</p>
             </div>
             <div class="reply_btn">
@@ -63,7 +64,6 @@
           </div>
         </div>
       </template>
-
 
       <template id="comment_container">
         <div class="comment_container" id="0">
@@ -95,9 +95,8 @@
         <!-- comment container -->
         <div class="input_reply_container">
           <img src="images/avatars/image-maxblagun.png" alt="profile_pic">
-          <textarea type="text" class="comment_input">
-            New Main Comment
-          </textarea>
+          <div contenteditable="true" class="comment_input">
+          </div>
           <a href="#" class="input_button">Send</a>
         </div>
       </template>
@@ -107,8 +106,9 @@
         <!-- comment container -->
         <div class="input_reply_container">
           <img src="images/avatars/image-maxblagun.png" alt="profile_pic">
-          <textarea type="text" class="comment_input">
-          </textarea>
+
+          <div contenteditable="true" class="comment_input">
+          </div>
           <a href="#" class="input_button">Reply</a>
         </div>
       </template>
@@ -121,15 +121,18 @@
         <!-- reply container -->
         <div class="input_reply_container">
           <img src="images/avatars/image-maxblagun.png" alt="profile_pic">
-          <textarea type="text" class="comment_input">
-                aklsd
-          </textarea>
+          <div contenteditable="true" class="comment_input">
+          </div>
           <a href="#" class="input_button">Reply</a>
         </div>
       </template>
 
 
-
+      <!-- To split username and acutal comment into two sepearte div -->
+      <template id="replyingToSpan">
+        <span class="replyingToUser"></span>
+        <span class="comment_colorized"></span>
+      </template>
 
 
 
@@ -149,6 +152,8 @@
           <textarea name="edit_comment" id="edit_comment" class="comment_input">
                   lkasdf
           </textarea>
+          <div contenteditable="true" name="edit_comment" id="edit_comment" class="comment_input">
+          </div>
           <a href="#" class="input_button" id="update_button">Update</a>
         </div>
 

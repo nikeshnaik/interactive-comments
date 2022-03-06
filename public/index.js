@@ -116,6 +116,7 @@ var templates = {
     "comment_box": document.getElementById("comment_box"),
     "main_comment_input": document.getElementById("main_comment_input"),
     "main_comment_reply_input": document.getElementById("main_comment_reply_input"),
+    "replyingToSpan": document.getElementById("replyingToSpan"),
     "reply_to_reply_comment": document.getElementById("reply_to_reply_comment"),
     "update_reply_comment": document.getElementById("reply_to_reply_comment"),
     "modal": document.getElementById("modal"),
@@ -132,6 +133,9 @@ function create_level_one_Comments(comment) {
     comment_box.querySelector(".user_name").textContent = comment.user.username;
     comment_box.querySelector(".post_date").textContent = comment.createdAt;
     comment_box.querySelector(".comment").textContent = comment.content;
+    if (comment.user.username == data.currentUser.username) {
+        comment_box.querySelector(".self-indicator").style.display = 'block';
+    }
     comment_container.appendChild(vote_container);
     comment_container.appendChild(comment_box);
     comment_container.id = comment.id;
@@ -162,6 +166,9 @@ function create_level_two_comments(reply) {
     comment_box.querySelector(".user_name").textContent = reply.user.username;
     comment_box.querySelector(".post_date").textContent = reply.createdAt;
     comment_box.querySelector(".comment").textContent = reply.content;
+    if (reply.user.username == data.currentUser.username) {
+        comment_box.querySelector(".self-indicator").style.display = 'block';
+    }
     return [vote_container, comment_box];
 }
 // Loops through each comment and for each reply constructs DOM.
@@ -188,8 +195,10 @@ function container_level_eventListener(container) {
                     event.target.previousElementSibling.textContent = data.comments[main_comment_index].replies[reply_comment_index].score;
                 }
                 else if (event.target.className == "input_button") {
-                    var input_text = event.currentTarget.querySelector(".comment_input").value;
-                    var reply_box = Replace_input_with_reply_box(input_text);
+                    var input_text = event.currentTarget.querySelector(".comment_input").textContent;
+                    console.log(event.currentTarget.querySelector(".comment_input"));
+                    // let replyingTo = event.currentTarget.querySelector(".user_name")
+                    var reply_box = Replace_input_with_reply_box(replyingTo, input_text);
                     // persist the change in Data
                     var clone = event.currentTarget.cloneNode(true).parentElement;
                     event.currentTarget.replaceWith(reply_box);
@@ -246,8 +255,10 @@ function container_level_eventListener(container) {
                 // Get existing reply_container
                 var existing_reply_container = event.currentTarget.nextSibling;
                 var reply_container = templates.reply_container.content.cloneNode(true).querySelector(".reply_container");
+                // Get replying To username
+                var replyingTo = event.currentTarget.querySelector(".user_name").textContent;
                 // build input reply container and appened to existing reply_container or clone new one
-                var input_reply_box = addReply_container();
+                var input_reply_box = addReply_container(replyingTo);
                 var next_sibling = event.currentTarget.nextSibling;
                 if (existing_reply_container.className == "reply_container") {
                     reply_container = existing_reply_container;
@@ -261,16 +272,21 @@ function container_level_eventListener(container) {
     }, true);
     return container;
 }
-function Replace_input_with_reply_box(new_comment) {
+function Replace_input_with_reply_box(replyingTo, new_comment) {
     // Reply Box replace
     var reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
     var vote_container = templates.vote_container.content.cloneNode(true).querySelector(".vote_container");
     var comment_box = templates.comment_box.content.cloneNode(true).querySelector(".comment_box");
+    var replyingTouser = templates.replyingToSpan.content.cloneNode(true).querySelector(".replyingToUser");
+    var new_comment_span = templates.replyingToSpan.content.cloneNode(true).querySelector(".comment_text");
+    replyingTouser.textContent = "@".concat(replyingTo, "  ");
+    new_comment_span.textContent = new_comment;
     vote_container.querySelector(".votes").textContent = 0;
     comment_box.querySelector(".profile_pic").src = data.currentUser.image.png;
     comment_box.querySelector(".user_name").textContent = data.currentUser.username;
     comment_box.querySelector(".post_date").textContent = "Today";
-    comment_box.querySelector(".comment").textContent = new_comment;
+    comment_box.querySelector(".comment").appendChild(replyingTouser).appendChild(new_comment_span);
+    comment_box.querySelector(".self-indicator").style.display = 'block';
     reply_box.appendChild(vote_container);
     reply_box.appendChild(comment_box);
     reply_ids += 1;
@@ -278,12 +294,14 @@ function Replace_input_with_reply_box(new_comment) {
     reply_box = container_level_eventListener(reply_box);
     return reply_box;
 }
-function addReply_container() {
+function addReply_container(replyingTo) {
     var input_reply_level_one = templates.main_comment_reply_input.content.cloneNode(true).querySelector(".input_reply_container");
     // let reply_container = templates.reply_container.content.cloneNode(true).querySelector(".reply_container");
     var reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
+    var replyingTouser = templates.replyingToSpan.content.cloneNode(true).querySelector(".replyingToUser");
+    replyingTouser.textContent = "@".concat(replyingTo, " ");
     input_reply_level_one.querySelector("img").src = data.currentUser.image.png;
-    input_reply_level_one.querySelector(".comment_input").value = "";
+    input_reply_level_one.querySelector(".comment_input").appendChild(replyingTouser);
     reply_box.appendChild(input_reply_level_one);
     reply_ids += 1;
     reply_box.id = reply_ids;
@@ -293,5 +311,7 @@ function addReply_container() {
 var reply_ids = 10;
 data.comments.map(create_level_one_Comments);
 // Todo
-// 1. Change replyTo with reply username
+// 1. Change replyTo with reply username, this [Done]
+// 1.5 add You to currentUser [Done]
 // 2. Continue adding new templates in any order
+//3. It seems we need to change comment_text logic from ground up

@@ -121,7 +121,8 @@ var templates = {
     "update_reply_comment": document.getElementById("reply_to_reply_comment"),
     "modal": document.getElementById("modal"),
     "reply_box": document.getElementById("reply_box"),
-    "container": document.querySelector(".container")
+    "container": document.querySelector(".container"),
+    "update_comment_button": document.getElementById("update_comment_template")
 };
 function create_level_one_Comments(comment) {
     var comment_container = templates.comment_container.content.cloneNode(true).querySelector(".comment_container");
@@ -286,6 +287,12 @@ function Replace_input_with_reply_box(replyingToUser, incoming_comment) {
     var reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
     var vote_container = templates.vote_container.content.cloneNode(true).querySelector(".vote_container");
     var comment_box = templates.comment_box.content.cloneNode(true).querySelector(".comment_box");
+    var update_comment_btns = templates.update_comment_button.content.cloneNode(true).querySelector(".update_comment");
+    // replce old reply butn with reply update div
+    var comment_nav = comment_box.querySelector(".comment_nav");
+    var reply_btn = comment_nav.querySelector(".reply_btn");
+    comment_nav.replaceChild(update_comment_btns, reply_btn);
+    // end
     vote_container.querySelector(".votes").textContent = 0;
     comment_box.querySelector(".profile_pic").src = data.currentUser.image.png;
     comment_box.querySelector(".user_name").textContent = data.currentUser.username;

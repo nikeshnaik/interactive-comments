@@ -130,6 +130,19 @@
         <span class="incoming_comment"></span>
       </template>
 
+      <template id="update_comment_template">
+        <div class="update_comment">
+          <a href="#" class="reply_btn">
+            <img src="images/icon-delete.svg" alt="" class="reply_icon">
+            <p class="reply_icon_text">Delete</p>
+          </a>
+          <a href="#" class="reply_btn">
+            <img src="images/icon-edit.svg" alt="edit_icon" class="reply_icon">
+            <p class="reply_icon_text">Edit</p>
+          </a>
+        </div>
+      </template>
+
 
 
       <template id="update_reply_comment">
@@ -145,10 +158,8 @@
           </a>
         </div>
         <div class="comment_text">
-          <textarea name="edit_comment" id="edit_comment" class="comment_input">
-                  lkasdf
-          </textarea>
           <div contenteditable="true" name="edit_comment" id="edit_comment" class="comment_input">
+
           </div>
           <a href="#" class="input_button" id="update_button">Update</a>
         </div>

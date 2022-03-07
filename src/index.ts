@@ -123,7 +123,8 @@ const templates = {
     "update_reply_comment": document.getElementById("reply_to_reply_comment"),
     "modal": document.getElementById("modal"),
     "reply_box": document.getElementById("reply_box"),
-    "container": document.querySelector(".container")
+    "container": document.querySelector(".container"),
+    "update_comment_button": document.getElementById("update_comment_template")
 
 }
 
@@ -440,6 +441,16 @@ function Replace_input_with_reply_box(replyingToUser, incoming_comment) {
     let vote_container = templates.vote_container.content.cloneNode(true).querySelector(".vote_container");
     let comment_box = templates.comment_box.content.cloneNode(true).querySelector(".comment_box");
 
+    let update_comment_btns = templates.update_comment_button.content.cloneNode(true).querySelector(".update_comment");
+    // replce old reply butn with reply update div
+    let comment_nav = comment_box.querySelector(".comment_nav")
+
+    let reply_btn = comment_nav.querySelector(".reply_btn")
+
+    comment_nav.replaceChild(update_comment_btns, reply_btn)
+
+    // end
+
 
     vote_container.querySelector(".votes").textContent = 0
 
@@ -449,6 +460,9 @@ function Replace_input_with_reply_box(replyingToUser, incoming_comment) {
     comment_box.querySelector(".comment").appendChild(replyingToUser)
     comment_box.querySelector(".comment").appendChild(incoming_comment)
     comment_box.querySelector(".self-indicator").style.display = 'block'
+
+
+
 
     reply_box.appendChild(vote_container)
     reply_box.appendChild(comment_box)

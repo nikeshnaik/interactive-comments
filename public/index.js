@@ -196,13 +196,11 @@ function container_level_eventListener(container) {
                 }
                 else if (event.target.className == "input_button") {
                     var input_text = event.currentTarget.querySelector(".comment_input").textContent;
-                    console.log(event.currentTarget.querySelector(".comment_input"));
-                    // let replyingTo = event.currentTarget.querySelector(".user_name")
-                    var reply_box = Replace_input_with_reply_box(replyingTo, input_text);
+                    var reply_box = Replace_input_with_reply_box(input_text);
                     // persist the change in Data
-                    var clone = event.currentTarget.cloneNode(true).parentElement;
-                    event.currentTarget.replaceWith(reply_box);
-                    reply_box.parentElement = clone;
+                    var reply_column = event.currentTarget.parentElement;
+                    reply_column.replaceChild(reply_box, event.currentTarget);
+                    var replyingTo = reply_column.parentElement.previousElementSibling.querySelector(".user_name").textContent;
                     var main_comment_id_2 = reply_box.closest(".reply_container").previousElementSibling.id;
                     var main_comment_index_1 = data.comments.findIndex(function (ele) { return ele.id == main_comment_id_2; });
                     console.log({ reply_ids: reply_ids });
@@ -211,7 +209,7 @@ function container_level_eventListener(container) {
                         "content": input_text,
                         "createdAt": "Today",
                         "score": 0,
-                        "replyingTo": data.comments[main_comment_index_1].user.username,
+                        "replyingTo": replyingTo,
                         // need to update with reply username
                         "user": {
                             "image": {
@@ -258,7 +256,7 @@ function container_level_eventListener(container) {
                 // Get replying To username
                 var replyingTo = event.currentTarget.querySelector(".user_name").textContent;
                 // build input reply container and appened to existing reply_container or clone new one
-                var input_reply_box = addReply_container(replyingTo);
+                var input_reply_box = addReply_container();
                 var next_sibling = event.currentTarget.nextSibling;
                 if (existing_reply_container.className == "reply_container") {
                     reply_container = existing_reply_container;
@@ -272,20 +270,16 @@ function container_level_eventListener(container) {
     }, true);
     return container;
 }
-function Replace_input_with_reply_box(replyingTo, new_comment) {
+function Replace_input_with_reply_box(new_comment) {
     // Reply Box replace
     var reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
     var vote_container = templates.vote_container.content.cloneNode(true).querySelector(".vote_container");
     var comment_box = templates.comment_box.content.cloneNode(true).querySelector(".comment_box");
-    var replyingTouser = templates.replyingToSpan.content.cloneNode(true).querySelector(".replyingToUser");
-    var new_comment_span = templates.replyingToSpan.content.cloneNode(true).querySelector(".comment_text");
-    replyingTouser.textContent = "@".concat(replyingTo, "  ");
-    new_comment_span.textContent = new_comment;
     vote_container.querySelector(".votes").textContent = 0;
     comment_box.querySelector(".profile_pic").src = data.currentUser.image.png;
     comment_box.querySelector(".user_name").textContent = data.currentUser.username;
     comment_box.querySelector(".post_date").textContent = "Today";
-    comment_box.querySelector(".comment").appendChild(replyingTouser).appendChild(new_comment_span);
+    comment_box.querySelector(".comment_text").textContent = new_comment;
     comment_box.querySelector(".self-indicator").style.display = 'block';
     reply_box.appendChild(vote_container);
     reply_box.appendChild(comment_box);
@@ -294,14 +288,12 @@ function Replace_input_with_reply_box(replyingTo, new_comment) {
     reply_box = container_level_eventListener(reply_box);
     return reply_box;
 }
-function addReply_container(replyingTo) {
+function addReply_container() {
     var input_reply_level_one = templates.main_comment_reply_input.content.cloneNode(true).querySelector(".input_reply_container");
     // let reply_container = templates.reply_container.content.cloneNode(true).querySelector(".reply_container");
     var reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
-    var replyingTouser = templates.replyingToSpan.content.cloneNode(true).querySelector(".replyingToUser");
-    replyingTouser.textContent = "@".concat(replyingTo, " ");
     input_reply_level_one.querySelector("img").src = data.currentUser.image.png;
-    input_reply_level_one.querySelector(".comment_input").appendChild(replyingTouser);
+    input_reply_level_one.querySelector(".comment_input").textContent = "";
     reply_box.appendChild(input_reply_level_one);
     reply_ids += 1;
     reply_box.id = reply_ids;

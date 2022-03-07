@@ -155,6 +155,7 @@ function create_level_one_Comments(comment) {
     comment_container.appendChild(comment_box)
 
     comment_container.id = comment.id
+
     comment_container = container_level_eventListener(comment_container)
 
     templates.container.appendChild(comment_container)
@@ -170,7 +171,6 @@ function create_level_one_Comments(comment) {
         let reply_container = templates.reply_container.content.cloneNode(true).querySelector(".reply_container");
 
         comment.replies.map((element) => {
-
 
             let reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
 
@@ -268,9 +268,10 @@ function container_level_eventListener(container) {
 
                 else if (event.target.className == "input_button") {
 
-                    let input_text = event.currentTarget.querySelector(".comment_input").textContent
+                    let replingyToUser = event.currentTarget.querySelector(".comment_input").firstElementChild
+                    let incoming_comment = event.currentTarget.querySelector(".comment_input").lastElementChild
 
-                    let reply_box = Replace_input_with_reply_box(input_text)
+                    let reply_box = Replace_input_with_reply_box(replingyToUser, incoming_comment)
                     // persist the change in Data
 
                     let reply_column = event.currentTarget.parentElement
@@ -289,7 +290,7 @@ function container_level_eventListener(container) {
 
                     let reply_object = {
                         "id": reply_box.id,
-                        "content": input_text,
+                        "content": replingyToUser.textContent + " " + incoming_comment.textContent,
                         "createdAt": "Today",
                         "score": 0,
                         "replyingTo": replyingTo,
@@ -316,8 +317,13 @@ function container_level_eventListener(container) {
 
                     let existing_reply_container = event.currentTarget.parentElement.parentElement
 
+
+                    let replyingTo = "asdfasd"
+                    console.log(event.currentTarget)
+
+
                     // clone input reply box
-                    let input_reply_box = addReply_container();
+                    let input_reply_box = addReply_container(replyingTo);
 
                     // get sibling of clicked reply button
 
@@ -331,6 +337,21 @@ function container_level_eventListener(container) {
 
                 }
 
+
+                else if (event.target.className == "comment_input") {
+
+                    console.log(event.target.childNodes[2])
+
+                    let range = document.createRange()
+                    let sel = window.getSelection()
+
+                    range.setStart(event.target.childNodes[2], 0)
+                    range.collapse(false)
+
+                    sel.removeAllRanges()
+                    sel.addRange(range)
+
+                }
 
 
             }
@@ -381,7 +402,7 @@ function container_level_eventListener(container) {
 
                 // build input reply container and appened to existing reply_container or clone new one
 
-                let input_reply_box = addReply_container();
+                let input_reply_box = addReply_container(replyingTo);
 
                 let next_sibling = event.currentTarget.nextSibling
 
@@ -391,7 +412,6 @@ function container_level_eventListener(container) {
 
                 }
 
-                console.log({ next_sibling })
 
                 reply_container.querySelector(".reply_column").appendChild(input_reply_box)
 
@@ -408,11 +428,11 @@ function container_level_eventListener(container) {
 
     return container
 
+
 }
 
 
-
-function Replace_input_with_reply_box(new_comment) {
+function Replace_input_with_reply_box(replyingToUser, incoming_comment) {
 
     // Reply Box replace
     let reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
@@ -426,7 +446,8 @@ function Replace_input_with_reply_box(new_comment) {
     comment_box.querySelector(".profile_pic").src = data.currentUser.image.png
     comment_box.querySelector(".user_name").textContent = data.currentUser.username
     comment_box.querySelector(".post_date").textContent = "Today"
-    comment_box.querySelector(".comment_text").textContent = new_comment
+    comment_box.querySelector(".comment").appendChild(replyingToUser)
+    comment_box.querySelector(".comment").appendChild(incoming_comment)
     comment_box.querySelector(".self-indicator").style.display = 'block'
 
     reply_box.appendChild(vote_container)
@@ -442,7 +463,7 @@ function Replace_input_with_reply_box(new_comment) {
 
 }
 
-function addReply_container() {
+function addReply_container(replyingTo) {
 
     let input_reply_level_one = templates.main_comment_reply_input.content.cloneNode(true).querySelector(".input_reply_container");
 
@@ -451,9 +472,28 @@ function addReply_container() {
     let reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
 
 
+    let replingyToUser = templates.replyingToSpan.content.cloneNode(true).querySelector(".replyingToUser")
+    replingyToUser.textContent = `@${replyingTo}`
+    replingyToUser.contentEditable = false
+
+    let comment_text = templates.replyingToSpan.content.cloneNode(true).querySelector(".incoming_comment")
+    comment_text.textContent = " "
+    comment_text.contentEditable = true
+
     input_reply_level_one.querySelector("img").src = data.currentUser.image.png
 
-    input_reply_level_one.querySelector(".comment_input").textContent = ""
+    input_reply_level_one.querySelector(".comment_input").appendChild(replingyToUser)
+
+
+    input_reply_level_one.querySelector(".comment_input").appendChild(comment_text)
+
+
+
+
+    console.log({ input_reply_level_one })
+
+    input_reply_level_one.querySelector(".comment_input").setAttribute("data-username", replyingTo)
+
 
     reply_box.appendChild(input_reply_level_one)
 
@@ -468,6 +508,7 @@ function addReply_container() {
 }
 
 
+
 let reply_ids = 10
 
 data.comments.map(create_level_one_Comments);
@@ -478,4 +519,4 @@ data.comments.map(create_level_one_Comments);
 // 1. Change replyTo with reply username, this [Done]
 // 1.5 add You to currentUser [Done]
 // 2. Continue adding new templates in any order
-//3. It seems we need to change comment_text logic from ground up
+//3. It seems we need to change comment_text logic from ground up, add eventlistener as you type to add elements.

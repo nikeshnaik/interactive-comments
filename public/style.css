@@ -214,11 +214,20 @@ main {
 }
 
 .replyingToUser {
+    display: inline;
+    padding-right: 0.4rem;
     color: var(--primary-Moderate-blue);
     font-weight: bolder;
 }
 
+.incoming_comment {
+    display: inline;
+    width: inherit;
+    word-wrap: inherit;
+}
+
 .comment_input {
+    display: block;
     width: inherit;
     min-height: 1rem;
     margin-bottom: 1rem;
@@ -226,6 +235,7 @@ main {
     border-radius: 0.6rem;
     color: #6f737c;
     border: 0.1rem solid;
+    overflow-x: hidden;
 }
 
 .input_button {

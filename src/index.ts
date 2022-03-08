@@ -230,6 +230,8 @@ function container_level_eventListener(container) {
 
     container.addEventListener("click", (event) => {
 
+        console.log("event target", event.target)
+        console.log("event currenttarget", event.currentTarget)
 
         if (event.currentTarget.className == "reply_box") {
 
@@ -422,6 +424,16 @@ function container_level_eventListener(container) {
 
             }
 
+            else if (event.target.className == "input_button") {
+
+                let new_comment = event.currentTarget.querySelector(".comment_input").textContent
+
+                Replace_input_with_comment_box(new_comment)
+
+
+
+            }
+
 
         }
 
@@ -503,9 +515,6 @@ function addReply_container(replyingTo) {
 
 
 
-
-    console.log({ input_reply_level_one })
-
     input_reply_level_one.querySelector(".comment_input").setAttribute("data-username", replyingTo)
 
 
@@ -527,10 +536,94 @@ let reply_ids = 10
 
 data.comments.map(create_level_one_Comments);
 
+starting_input_box()
+
+function starting_input_box() {
+
+    let comment_container = templates.comment_container.content.cloneNode(true).querySelector(".comment_container");
+    //     <div class="input_reply_container">
+    //     <img src="images/avatars/image-maxblagun.png" alt="profile_pic">
+    //     <div contenteditable="true" class="comment_input">
+    //     </div>
+    //     <a href="#" class="input_button">Send</a>
+    //   </div>
+    let main_comment_input = templates.main_comment_input.content.cloneNode(true).querySelector(".input_reply_container");
+
+    main_comment_input.querySelector("img").src = data.currentUser.image.png
+
+    comment_container.appendChild(main_comment_input)
+
+    comment_container = container_level_eventListener(comment_container)
+
+    templates.container.appendChild(comment_container)
+
+}
+
+function Replace_input_with_comment_box(new_comment = "") {
+
+    let comment_container = templates.comment_container.content.cloneNode(true).querySelector(".comment_container");
+    let vote_container = templates.vote_container.content.cloneNode(true).querySelector(".vote_container");
+    let comment_box = templates.comment_box.content.cloneNode(true).querySelector(".comment_box");
+
+    reply_ids = reply_ids + 1
+
+    let main_comment =
+    {
+        "id": reply_ids,
+        "content": new_comment,
+        "createdAt": "Today",
+        "score": 0,
+        "user": {
+            "image": {
+                "png": data.currentUser.image.png,
+                "webp": data.currentUser.image.webp
+            },
+            "username": data.currentUser.username
+        },
+        "replies": []
+    }
+
+    data.comments.push(main_comment)
+
+    vote_container.querySelector(".votes").textContent = 0
+
+    comment_container.appendChild(vote_container)
+
+    comment_box.querySelector(".profile_pic").src = data.currentUser.image.png
+    comment_box.querySelector(".user_name").textContent = data.currentUser.username
+    comment_box.querySelector(".post_date").textContent = "Today"
+    comment_box.querySelector(".comment").textContent = new_comment
+    comment_box.querySelector(".self-indicator").style.display = 'block'
+
+    comment_container.appendChild(vote_container)
+    comment_container.appendChild(comment_box)
+
+    let update_comment_btns = templates.update_comment_button.content.cloneNode(true).querySelector(".update_comment");
+    // replce old reply butn with reply update div
+    let comment_nav = comment_box.querySelector(".comment_nav")
+
+    let reply_btn = comment_nav.querySelector(".reply_btn")
+
+    comment_nav.replaceChild(update_comment_btns, reply_btn)
+
+
+    comment_container.id = reply_ids
+
+    comment_container = container_level_eventListener(comment_container)
+
+
+    let last_element = templates.container.lastElementChild
+
+    templates.container.replaceChild(comment_container, last_element)
+
+    starting_input_box()
+
+
+}
 
 // Todo
 
 // 1. Change replyTo with reply username, this [Done]
 // 1.5 add You to currentUser [Done]
 // 2. Continue adding new templates in any order
-//3. It seems we need to change comment_text logic from ground up, add eventlistener as you type to add elements.
+//3. It seems we need to change comment_text logic from ground up, add eventlistener as you type to add elements. [Done with Range]

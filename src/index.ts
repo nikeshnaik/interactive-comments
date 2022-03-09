@@ -121,13 +121,17 @@ const templates = {
     "replyingToSpan": document.getElementById("replyingToSpan"),
     "reply_to_reply_comment": document.getElementById("reply_to_reply_comment"),
     "update_reply_comment": document.getElementById("reply_to_reply_comment"),
-    "modal": document.getElementById("modal"),
+    "modal": document.querySelector("#modal"),
     "reply_box": document.getElementById("reply_box"),
     "container": document.querySelector(".container"),
-    "update_comment_button": document.getElementById("update_comment_template")
+    "update_comment_button": document.getElementById("update_comment_template"),
+    "update_reply_comment_edit": document.getElementById("update_reply_comment")
 
 }
 
+
+let delete_main_comment_id = null
+let delete_reply_id = null
 
 
 
@@ -271,6 +275,7 @@ function container_level_eventListener(container) {
 
                 else if (event.target.className == "input_button") {
 
+
                     let replingyToUser = event.currentTarget.querySelector(".comment_input").firstElementChild
                     let incoming_comment = event.currentTarget.querySelector(".comment_input").lastElementChild
 
@@ -287,8 +292,6 @@ function container_level_eventListener(container) {
 
                     let main_comment_id = reply_box.closest(".reply_container").previousElementSibling.id
                     let main_comment_index = data.comments.findIndex(ele => ele.id == main_comment_id)
-
-                    console.log({ reply_ids })
 
 
                     let reply_object = {
@@ -322,7 +325,6 @@ function container_level_eventListener(container) {
 
 
                     let replyingTo = "asdfasd"
-                    console.log(event.currentTarget)
 
 
                     // clone input reply box
@@ -342,7 +344,14 @@ function container_level_eventListener(container) {
 
 
                 else if (event.target.className == "comment_input") {
+                    let range = document.createRange()
+                    let sel = window.getSelection()
 
+                    range.setStart(event.target.childNodes[2], 0)
+                    range.collapse(false)
+
+                    sel.removeAllRanges()
+                    sel.addRange(range)
                     console.log(event.target.childNodes[2])
 
                     let range = document.createRange()
@@ -353,6 +362,32 @@ function container_level_eventListener(container) {
 
                     sel.removeAllRanges()
                     sel.addRange(range)
+
+                }
+
+                else if (event.target.parentElement.className == "edit_btn") {
+
+                    let old_replingTo = event.currentTarget.querySelector(".replyingToUser")
+                    let old_incoming_comment = event.currentTarget.querySelector(".incoming_comment")
+
+                    let comment_text = event.currentTarget.querySelector(".comment_text")
+
+                    edit_button(comment_text, old_incoming_comment, old_replingTo)
+
+
+                }
+
+                else if (event.target.parentElement.className == "delete_btn") {
+                    console.log("Delete Button Press")
+
+                    document.getElementsByClassName("modal_container")[0].style.display = "flex";
+
+                    console.log("asdfaks", event.target)
+                    console.log(event.currentTarget)
+
+                    delete_main_comment_id = event.currentTarget.parentElement.closest(".reply_container").previousElementSibling
+                    delete_reply_id = event.currentTarget.id
+
 
                 }
 
@@ -389,7 +424,6 @@ function container_level_eventListener(container) {
             }
 
 
-
             else if (event.target.parentElement.className == "reply_btn") {
 
 
@@ -415,7 +449,6 @@ function container_level_eventListener(container) {
 
                 }
 
-
                 reply_container.querySelector(".reply_column").appendChild(input_reply_box)
 
 
@@ -430,10 +463,32 @@ function container_level_eventListener(container) {
 
                 Replace_input_with_comment_box(new_comment)
 
+            }
+
+            else if (event.target.parentElement.className == "edit_btn") {
+
+                let old_comment = event.currentTarget.querySelector(".comment")
+
+                let comment_text = event.currentTarget.querySelector(".comment_text")
+
+                edit_button(comment_text, old_comment, "")
 
 
             }
 
+            else if (event.target.parentElement.className == "delete_btn") {
+                console.log("Delete Button Press")
+
+                document.getElementsByClassName("modal_container")[0].style.display = "flex";
+
+                console.log("asdfaks", event.target)
+                console.log(event.currentTarget)
+
+                delete_main_comment_id = event.currentTarget.parentElement.closest(".reply_container").previousElementSibling
+                delete_reply_id = event.currentTarget.id
+
+
+            }
 
         }
 
@@ -463,6 +518,7 @@ function Replace_input_with_reply_box(replyingToUser, incoming_comment) {
 
     // end
 
+    incoming_comment.contentEditable = false
 
     vote_container.querySelector(".votes").textContent = 0
 
@@ -472,8 +528,6 @@ function Replace_input_with_reply_box(replyingToUser, incoming_comment) {
     comment_box.querySelector(".comment").appendChild(replyingToUser)
     comment_box.querySelector(".comment").appendChild(incoming_comment)
     comment_box.querySelector(".self-indicator").style.display = 'block'
-
-
 
 
     reply_box.appendChild(vote_container)
@@ -497,7 +551,6 @@ function addReply_container(replyingTo) {
 
     let reply_box = templates.reply_box.content.cloneNode(true).querySelector(".reply_box");
 
-
     let replingyToUser = templates.replyingToSpan.content.cloneNode(true).querySelector(".replyingToUser")
     replingyToUser.textContent = `@${replyingTo}`
     replingyToUser.contentEditable = false
@@ -512,7 +565,6 @@ function addReply_container(replyingTo) {
 
 
     input_reply_level_one.querySelector(".comment_input").appendChild(comment_text)
-
 
 
     input_reply_level_one.querySelector(".comment_input").setAttribute("data-username", replyingTo)
@@ -537,6 +589,10 @@ let reply_ids = 10
 data.comments.map(create_level_one_Comments);
 
 starting_input_box()
+
+document.getElementsByClassName("modal_container")[0].style.display = "none";
+
+let delete_id = null;
 
 function starting_input_box() {
 
@@ -621,6 +677,62 @@ function Replace_input_with_comment_box(new_comment = "") {
 
 }
 
+
+function edit_button(comment_text, old_incoming_comment, old_replingTo) {
+
+    let new_comment_text = templates.update_reply_comment_edit.content.cloneNode(true).querySelector(".comment_text");
+
+    old_incoming_comment.contentEditable = true
+    old_replingTo.contentEditable = true
+
+    console.log("oldcomment", old_incoming_comment.textContent)
+
+    if (old_replingTo !== "") {
+
+        new_comment_text.querySelector(".comment_input").appendChild(old_replingTo)
+
+    }
+    new_comment_text.querySelector(".comment_input").appendChild(old_incoming_comment)
+
+    let parent_comment_text = comment_text.parentElement
+
+    parent_comment_text.replaceChild(new_comment_text, comment_text)
+
+}
+
+
+
+document.getElementsByTagName("body")[0].addEventListener("click", (event) => {
+
+    console.log("target", event.target)
+    console.log("current", event.currentTarget)
+
+    if (event.target.id == "delete_button") {
+
+        console.log(delete_main_comment_id.id)
+        console.log(delete_reply_id)
+
+
+        let main_comment_index = data.comments.findIndex(ele => ele.id == delete_main_comment_id.id)
+        let reply_id = data.comments.findIndex(ele => ele.id == delete_reply_id)
+
+        data.comments[main_comment_index].replies.splice(reply_id, 1)
+
+        let reply_box = document.getElementById(delete_reply_id).parentElement
+        reply_box.removeChild(document.getElementById(delete_reply_id))
+
+        document.getElementsByClassName("modal_container")[0].style.display = "none";
+    }
+
+    else if (event.target.id == "cancel") {
+
+        document.getElementsByClassName("modal_container")[0].style.display = "none";
+
+    }
+
+})
+
+//
 // Todo
 
 // 1. Change replyTo with reply username, this [Done]

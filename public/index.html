@@ -132,13 +132,13 @@
 
       <template id="update_comment_template">
         <div class="update_comment">
-          <a href="#" class="reply_btn">
-            <img src="images/icon-delete.svg" alt="" class="reply_icon">
-            <p class="reply_icon_text">Delete</p>
+          <a href="#" class="delete_btn">
+            <img src="images/icon-delete.svg" alt="" class="delete_icon">
+            <p class="delete_icon_text">Delete</p>
           </a>
-          <a href="#" class="reply_btn">
-            <img src="images/icon-edit.svg" alt="edit_icon" class="reply_icon">
-            <p class="reply_icon_text">Edit</p>
+          <a href="#" class="edit_btn">
+            <img src="images/icon-edit.svg" alt="edit_icon" class="edit_icon">
+            <p class="edit_icon_text">Edit</p>
           </a>
         </div>
       </template>
@@ -148,13 +148,13 @@
       <template id="update_reply_comment">
         <!-- comment container or reply container -->
         <div class="update_comment">
-          <a href="#" class="reply_btn">
-            <img src="images/icon-delete.svg" alt="" class="reply_icon">
-            <p class="reply_icon_text">Delete</p>
+          <a href="#" class="delete_btn">
+            <img src="images/icon-delete.svg" alt="" class="delete_icon">
+            <p class="delete_icon_text">Delete</p>
           </a>
-          <a href="#" class="reply_btn">
-            <img src="images/icon-edit.svg" alt="edit_icon" class="reply_icon">
-            <p class="reply_icon_text">Edit</p>
+          <a href="#" class="edit_btn">
+            <img src="images/icon-edit.svg" alt="edit_icon" class="edit_icon">
+            <p class="edit_icon_text">Edit</p>
           </a>
         </div>
         <div class="comment_text">
@@ -167,26 +167,24 @@
       </template>
 
 
-      <template id="modal">
-        <div class="modal_container">
+      <div class="modal_container">
 
-          <div class="modal_content">
+        <div class="modal_content">
 
-            <h2 id="delete_heading">Delete Comment</h2>
-            <p id="delete_warning">
-              Are you sure you want to delete this comment? This will remove the comment
-              and can't be undone.
-            </p>
+          <h2 id="delete_heading">Delete Comment</h2>
+          <p id="delete_warning">
+            Are you sure you want to delete this comment? This will remove the comment
+            and can't be undone.
+          </p>
 
-            <div class="modal_buttons">
-              <a href="#" class="input_button" id="cancel">No, Cancel</a>
-              <a href="#" class="input_button" id="delete_button">Yes, Delete</a>
-            </div>
-
-
+          <div class="modal_buttons">
+            <a href="#" class="input_button" id="cancel">No, Cancel</a>
+            <a href="#" class="input_button" id="delete_button">Yes, Delete</a>
           </div>
+
+
         </div>
-      </template>
+      </div>
 
     </div>
 

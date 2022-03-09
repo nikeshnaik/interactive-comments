@@ -119,11 +119,14 @@ var templates = {
     "replyingToSpan": document.getElementById("replyingToSpan"),
     "reply_to_reply_comment": document.getElementById("reply_to_reply_comment"),
     "update_reply_comment": document.getElementById("reply_to_reply_comment"),
-    "modal": document.getElementById("modal"),
+    "modal": document.querySelector("#modal"),
     "reply_box": document.getElementById("reply_box"),
     "container": document.querySelector(".container"),
-    "update_comment_button": document.getElementById("update_comment_template")
+    "update_comment_button": document.getElementById("update_comment_template"),
+    "update_reply_comment_edit": document.getElementById("update_reply_comment")
 };
+var delete_main_comment_id = null;
+var delete_reply_id = null;
 function create_level_one_Comments(comment) {
     var comment_container = templates.comment_container.content.cloneNode(true).querySelector(".comment_container");
     var vote_container = templates.vote_container.content.cloneNode(true).querySelector(".vote_container");
@@ -207,7 +210,6 @@ function container_level_eventListener(container) {
                     var replyingTo = reply_column.parentElement.previousElementSibling.querySelector(".user_name").textContent;
                     var main_comment_id_2 = reply_box.closest(".reply_container").previousElementSibling.id;
                     var main_comment_index_1 = data.comments.findIndex(function (ele) { return ele.id == main_comment_id_2; });
-                    console.log({ reply_ids: reply_ids });
                     var reply_object = {
                         "id": reply_box.id,
                         "content": replingyToUser.textContent + " " + incoming_comment.textContent,
@@ -231,7 +233,6 @@ function container_level_eventListener(container) {
                     // Get existing reply_container
                     var existing_reply_container = event.currentTarget.parentElement.parentElement;
                     var replyingTo = "asdfasd";
-                    console.log(event.currentTarget);
                     // clone input reply box
                     var input_reply_box = addReply_container(replyingTo);
                     // get sibling of clicked reply button
@@ -240,6 +241,12 @@ function container_level_eventListener(container) {
                     existing_reply_container.querySelector(".reply_column").insertBefore(input_reply_box, next_sibling);
                 }
                 else if (event.target.className == "comment_input") {
+                    var range = document.createRange();
+                    var sel = window.getSelection();
+                    range.setStart(event.target.childNodes[2], 0);
+                    range.collapse(false);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
                     console.log(event.target.childNodes[2]);
                     var range = document.createRange();
                     var sel = window.getSelection();
@@ -247,6 +254,20 @@ function container_level_eventListener(container) {
                     range.collapse(false);
                     sel.removeAllRanges();
                     sel.addRange(range);
+                }
+                else if (event.target.parentElement.className == "edit_btn") {
+                    var old_replingTo = event.currentTarget.querySelector(".replyingToUser");
+                    var old_incoming_comment = event.currentTarget.querySelector(".incoming_comment");
+                    var comment_text = event.currentTarget.querySelector(".comment_text");
+                    edit_button(comment_text, old_incoming_comment, old_replingTo);
+                }
+                else if (event.target.parentElement.className == "delete_btn") {
+                    console.log("Delete Button Press");
+                    document.getElementsByClassName("modal_container")[0].style.display = "flex";
+                    console.log("asdfaks", event.target);
+                    console.log(event.currentTarget);
+                    delete_main_comment_id = event.currentTarget.parentElement.closest(".reply_container").previousElementSibling;
+                    delete_reply_id = event.currentTarget.id;
                 }
             }
         }
@@ -284,6 +305,19 @@ function container_level_eventListener(container) {
                 var new_comment = event.currentTarget.querySelector(".comment_input").textContent;
                 Replace_input_with_comment_box(new_comment);
             }
+            else if (event.target.parentElement.className == "edit_btn") {
+                var old_comment = event.currentTarget.querySelector(".comment");
+                var comment_text = event.currentTarget.querySelector(".comment_text");
+                edit_button(comment_text, old_comment, "");
+            }
+            else if (event.target.parentElement.className == "delete_btn") {
+                console.log("Delete Button Press");
+                document.getElementsByClassName("modal_container")[0].style.display = "flex";
+                console.log("asdfaks", event.target);
+                console.log(event.currentTarget);
+                delete_main_comment_id = event.currentTarget.parentElement.closest(".reply_container").previousElementSibling;
+                delete_reply_id = event.currentTarget.id;
+            }
         }
     }, true);
     return container;
@@ -299,6 +333,7 @@ function Replace_input_with_reply_box(replyingToUser, incoming_comment) {
     var reply_btn = comment_nav.querySelector(".reply_btn");
     comment_nav.replaceChild(update_comment_btns, reply_btn);
     // end
+    incoming_comment.contentEditable = false;
     vote_container.querySelector(".votes").textContent = 0;
     comment_box.querySelector(".profile_pic").src = data.currentUser.image.png;
     comment_box.querySelector(".user_name").textContent = data.currentUser.username;
@@ -336,6 +371,8 @@ function addReply_container(replyingTo) {
 var reply_ids = 10;
 data.comments.map(create_level_one_Comments);
 starting_input_box();
+document.getElementsByClassName("modal_container")[0].style.display = "none";
+var delete_id = null;
 function starting_input_box() {
     var comment_container = templates.comment_container.content.cloneNode(true).querySelector(".comment_container");
     //     <div class="input_reply_container">
@@ -391,6 +428,36 @@ function Replace_input_with_comment_box(new_comment) {
     templates.container.replaceChild(comment_container, last_element);
     starting_input_box();
 }
+function edit_button(comment_text, old_incoming_comment, old_replingTo) {
+    var new_comment_text = templates.update_reply_comment_edit.content.cloneNode(true).querySelector(".comment_text");
+    old_incoming_comment.contentEditable = true;
+    old_replingTo.contentEditable = true;
+    console.log("oldcomment", old_incoming_comment.textContent);
+    if (old_replingTo !== "") {
+        new_comment_text.querySelector(".comment_input").appendChild(old_replingTo);
+    }
+    new_comment_text.querySelector(".comment_input").appendChild(old_incoming_comment);
+    var parent_comment_text = comment_text.parentElement;
+    parent_comment_text.replaceChild(new_comment_text, comment_text);
+}
+document.getElementsByTagName("body")[0].addEventListener("click", function (event) {
+    console.log("target", event.target);
+    console.log("current", event.currentTarget);
+    if (event.target.id == "delete_button") {
+        console.log(delete_main_comment_id.id);
+        console.log(delete_reply_id);
+        var main_comment_index = data.comments.findIndex(function (ele) { return ele.id == delete_main_comment_id.id; });
+        var reply_id = data.comments.findIndex(function (ele) { return ele.id == delete_reply_id; });
+        data.comments[main_comment_index].replies.splice(reply_id, 1);
+        var reply_box = document.getElementById(delete_reply_id).parentElement;
+        reply_box.removeChild(document.getElementById(delete_reply_id));
+        document.getElementsByClassName("modal_container")[0].style.display = "none";
+    }
+    else if (event.target.id == "cancel") {
+        document.getElementsByClassName("modal_container")[0].style.display = "none";
+    }
+});
+//
 // Todo
 // 1. Change replyTo with reply username, this [Done]
 // 1.5 add You to currentUser [Done]

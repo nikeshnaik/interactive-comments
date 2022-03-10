@@ -234,8 +234,6 @@ function container_level_eventListener(container) {
 
     container.addEventListener("click", (event) => {
 
-        console.log("event target", event.target)
-        console.log("event currenttarget", event.currentTarget)
 
         if (event.currentTarget.className == "reply_box") {
 
@@ -313,8 +311,6 @@ function container_level_eventListener(container) {
                     data.comments[main_comment_index].replies.push(reply_object)
 
                 }
-                // console.log(event.target)
-                // console.log(event.currentTarget)
 
                 else if (event.target.parentElement.className == "reply_btn") {
 
@@ -378,12 +374,9 @@ function container_level_eventListener(container) {
                 }
 
                 else if (event.target.parentElement.className == "delete_btn") {
-                    console.log("Delete Button Press")
 
                     document.getElementsByClassName("modal_container")[0].style.display = "flex";
 
-                    console.log("asdfaks", event.target)
-                    console.log(event.currentTarget)
 
                     delete_main_comment_id = event.currentTarget.parentElement.closest(".reply_container").previousElementSibling
                     delete_reply_id = event.currentTarget.id
@@ -457,9 +450,18 @@ function container_level_eventListener(container) {
 
             }
 
+            else if (event.target.id == "update_button") {
+                console.log(event.target)
+                console.log(event.currentTarget)
+                let new_comment = event.currentTarget.querySelector(".comment").textContent
+                console.log(new_comment)
+                Replace_input_with_comment_box(new_comment, true)
+            }
+
             else if (event.target.className == "input_button") {
 
                 let new_comment = event.currentTarget.querySelector(".comment_input").textContent
+
 
                 Replace_input_with_comment_box(new_comment)
 
@@ -477,16 +479,9 @@ function container_level_eventListener(container) {
             }
 
             else if (event.target.parentElement.className == "delete_btn") {
-                console.log("Delete Button Press")
 
                 document.getElementsByClassName("modal_container")[0].style.display = "flex";
-
-                console.log("asdfaks", event.target)
-                console.log(event.currentTarget)
-
-                delete_main_comment_id = event.currentTarget.parentElement.closest(".reply_container").previousElementSibling
-                delete_reply_id = event.currentTarget.id
-
+                delete_main_comment_id = event.currentTarget
 
             }
 
@@ -615,7 +610,7 @@ function starting_input_box() {
 
 }
 
-function Replace_input_with_comment_box(new_comment = "") {
+function Replace_input_with_comment_box(new_comment = "", update = false) {
 
     let comment_container = templates.comment_container.content.cloneNode(true).querySelector(".comment_container");
     let vote_container = templates.vote_container.content.cloneNode(true).querySelector(".vote_container");
@@ -668,9 +663,15 @@ function Replace_input_with_comment_box(new_comment = "") {
     comment_container = container_level_eventListener(comment_container)
 
 
+    if (update) {
+        let penultimate_element = templates.container.lastElementChild.previousElementSibling
+        templates.container.replaceChild(comment_container, penultimate_element)
+    }
+
     let last_element = templates.container.lastElementChild
 
     templates.container.replaceChild(comment_container, last_element)
+
 
     starting_input_box()
 
@@ -685,7 +686,6 @@ function edit_button(comment_text, old_incoming_comment, old_replingTo) {
     old_incoming_comment.contentEditable = true
     old_replingTo.contentEditable = true
 
-    console.log("oldcomment", old_incoming_comment.textContent)
 
     if (old_replingTo !== "") {
 
@@ -704,22 +704,25 @@ function edit_button(comment_text, old_incoming_comment, old_replingTo) {
 
 document.getElementsByTagName("body")[0].addEventListener("click", (event) => {
 
-    console.log("target", event.target)
-    console.log("current", event.currentTarget)
 
     if (event.target.id == "delete_button") {
 
-        console.log(delete_main_comment_id.id)
-        console.log(delete_reply_id)
 
 
         let main_comment_index = data.comments.findIndex(ele => ele.id == delete_main_comment_id.id)
         let reply_id = data.comments.findIndex(ele => ele.id == delete_reply_id)
 
-        data.comments[main_comment_index].replies.splice(reply_id, 1)
+        if (reply_id > 0) {
 
-        let reply_box = document.getElementById(delete_reply_id).parentElement
-        reply_box.removeChild(document.getElementById(delete_reply_id))
+            data.comments[main_comment_index].replies.splice(reply_id, 1)
+            let reply_box = document.getElementById(delete_reply_id).parentElement
+            reply_box.removeChild(document.getElementById(delete_reply_id))
+        }
+        else {
+            data.comments.splice(main_comment_index, 1)
+            let comment_box = document.getElementById(delete_main_comment_id.id)
+            comment_box.parentElement.removeChild(comment_box)
+        }
 
         document.getElementsByClassName("modal_container")[0].style.display = "none";
     }

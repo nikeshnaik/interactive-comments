@@ -178,8 +178,6 @@ function create_level_two_comments(reply) {
 // Loops through each comment and for each reply constructs DOM.
 function container_level_eventListener(container) {
     container.addEventListener("click", function (event) {
-        console.log("event target", event.target);
-        console.log("event currenttarget", event.currentTarget);
         if (event.currentTarget.className == "reply_box") {
             //  Get Main Commnent ID and Reply ID by bubbling up event from DOM
             var main_comment_id_1 = parseInt(event.currentTarget.closest(".reply_container").previousSibling.id);
@@ -227,8 +225,6 @@ function container_level_eventListener(container) {
                     };
                     data.comments[main_comment_index_1].replies.push(reply_object);
                 }
-                // console.log(event.target)
-                // console.log(event.currentTarget)
                 else if (event.target.parentElement.className == "reply_btn") {
                     // Get existing reply_container
                     var existing_reply_container = event.currentTarget.parentElement.parentElement;
@@ -262,10 +258,7 @@ function container_level_eventListener(container) {
                     edit_button(comment_text, old_incoming_comment, old_replingTo);
                 }
                 else if (event.target.parentElement.className == "delete_btn") {
-                    console.log("Delete Button Press");
                     document.getElementsByClassName("modal_container")[0].style.display = "flex";
-                    console.log("asdfaks", event.target);
-                    console.log(event.currentTarget);
                     delete_main_comment_id = event.currentTarget.parentElement.closest(".reply_container").previousElementSibling;
                     delete_reply_id = event.currentTarget.id;
                 }
@@ -301,6 +294,13 @@ function container_level_eventListener(container) {
                 // Insert before new comment
                 templates.container.insertBefore(reply_container, next_sibling);
             }
+            else if (event.target.id == "update_button") {
+                console.log(event.target);
+                console.log(event.currentTarget);
+                var new_comment = event.currentTarget.querySelector(".comment").textContent;
+                console.log(new_comment);
+                Replace_input_with_comment_box(new_comment, true);
+            }
             else if (event.target.className == "input_button") {
                 var new_comment = event.currentTarget.querySelector(".comment_input").textContent;
                 Replace_input_with_comment_box(new_comment);
@@ -311,12 +311,8 @@ function container_level_eventListener(container) {
                 edit_button(comment_text, old_comment, "");
             }
             else if (event.target.parentElement.className == "delete_btn") {
-                console.log("Delete Button Press");
                 document.getElementsByClassName("modal_container")[0].style.display = "flex";
-                console.log("asdfaks", event.target);
-                console.log(event.currentTarget);
-                delete_main_comment_id = event.currentTarget.parentElement.closest(".reply_container").previousElementSibling;
-                delete_reply_id = event.currentTarget.id;
+                delete_main_comment_id = event.currentTarget;
             }
         }
     }, true);
@@ -387,8 +383,9 @@ function starting_input_box() {
     comment_container = container_level_eventListener(comment_container);
     templates.container.appendChild(comment_container);
 }
-function Replace_input_with_comment_box(new_comment) {
+function Replace_input_with_comment_box(new_comment, update) {
     if (new_comment === void 0) { new_comment = ""; }
+    if (update === void 0) { update = false; }
     var comment_container = templates.comment_container.content.cloneNode(true).querySelector(".comment_container");
     var vote_container = templates.vote_container.content.cloneNode(true).querySelector(".vote_container");
     var comment_box = templates.comment_box.content.cloneNode(true).querySelector(".comment_box");
@@ -424,6 +421,10 @@ function Replace_input_with_comment_box(new_comment) {
     comment_nav.replaceChild(update_comment_btns, reply_btn);
     comment_container.id = reply_ids;
     comment_container = container_level_eventListener(comment_container);
+    if (update) {
+        var penultimate_element = templates.container.lastElementChild.previousElementSibling;
+        templates.container.replaceChild(comment_container, penultimate_element);
+    }
     var last_element = templates.container.lastElementChild;
     templates.container.replaceChild(comment_container, last_element);
     starting_input_box();
@@ -432,7 +433,6 @@ function edit_button(comment_text, old_incoming_comment, old_replingTo) {
     var new_comment_text = templates.update_reply_comment_edit.content.cloneNode(true).querySelector(".comment_text");
     old_incoming_comment.contentEditable = true;
     old_replingTo.contentEditable = true;
-    console.log("oldcomment", old_incoming_comment.textContent);
     if (old_replingTo !== "") {
         new_comment_text.querySelector(".comment_input").appendChild(old_replingTo);
     }
@@ -441,16 +441,19 @@ function edit_button(comment_text, old_incoming_comment, old_replingTo) {
     parent_comment_text.replaceChild(new_comment_text, comment_text);
 }
 document.getElementsByTagName("body")[0].addEventListener("click", function (event) {
-    console.log("target", event.target);
-    console.log("current", event.currentTarget);
     if (event.target.id == "delete_button") {
-        console.log(delete_main_comment_id.id);
-        console.log(delete_reply_id);
         var main_comment_index = data.comments.findIndex(function (ele) { return ele.id == delete_main_comment_id.id; });
         var reply_id = data.comments.findIndex(function (ele) { return ele.id == delete_reply_id; });
-        data.comments[main_comment_index].replies.splice(reply_id, 1);
-        var reply_box = document.getElementById(delete_reply_id).parentElement;
-        reply_box.removeChild(document.getElementById(delete_reply_id));
+        if (reply_id > 0) {
+            data.comments[main_comment_index].replies.splice(reply_id, 1);
+            var reply_box = document.getElementById(delete_reply_id).parentElement;
+            reply_box.removeChild(document.getElementById(delete_reply_id));
+        }
+        else {
+            data.comments.splice(main_comment_index, 1);
+            var comment_box = document.getElementById(delete_main_comment_id.id);
+            comment_box.parentElement.removeChild(comment_box);
+        }
         document.getElementsByClassName("modal_container")[0].style.display = "none";
     }
     else if (event.target.id == "cancel") {
